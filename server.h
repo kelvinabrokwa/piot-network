@@ -1,6 +1,6 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-void error(const char *msg);
+int start_server(int portno);
 
 #endif
