@@ -1,14 +1,10 @@
 all:
-	make clean && make server && make client
-server:
-	gcc server.c server.h -o server
-client:
-	gcc client.c client.h -o client
+	make sample
 sample:
-	make sample-client && make sample server
+	make sample-client && make sample-server
 sample-client:
-	gcc sample_client.c -o sample_client
+	gcc sample_client.c client.c error.c -lm -o client
 sample-server:
-	gcc sample_server.c -o sample_server
+	gcc sample_server.c server.c error.c -lm -o server
 clean:
 	rm server client

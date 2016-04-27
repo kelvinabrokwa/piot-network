@@ -7,6 +7,6 @@ typedef struct {
   int connected;
 } client_id;
 
-int client(client_id id);
+int client(client_id *id);
 
 #endif

@@ -28,21 +28,15 @@ int start_server(int portno)
   if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
     error("ERROR on binding");
   }
-  listen(sockfd,5);
+  listen(sockfd, 5);
   clilen = sizeof(cli_addr);
   newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-  if (newsockfd < 0) {
-    error("ERROR on accept");
-  }
-  bzero(buffer, 256);
-  n = read(newsockfd, buffer, 255);
-  if (n < 0) {
-    error("ERROR reading from socket");
-  }
-  printf("Here is the message: %s\n", buffer);
-  n = write(newsockfd, "I got your message", 18);
-  if (n < 0) {
-    error("ERROR writing to socket");
+  if (newsockfd < 0) error("ERROR on accept");
+  while (1) {
+    bzero(buffer, 256);
+    n = read(newsockfd, buffer, 255);
+    if (n < 0) error("ERROR reading from socket");
+    printf("%s\n", buffer);
   }
   close(newsockfd);
   close(sockfd);

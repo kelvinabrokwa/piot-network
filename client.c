@@ -10,18 +10,16 @@
 #include "client.h"
 #include "error.h"
 
-int client(client_id id) {
+int client(client_id *id) {
   int sockfd, portno, n;
   struct sockaddr_in serv_addr;
   struct hostent *server;
-
   char buffer[256];
   portno = 5000;
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0) {
     error("ERROR opening socket");
   }
-  //server = gethostbyname(argv[1]);
   server = gethostbyname("localhost");
   if (server == NULL) {
     fprintf(stderr,"ERROR, no such host\n");
@@ -34,12 +32,14 @@ int client(client_id id) {
   if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
     error("ERROR connecting");
   }
-  printf("Please enter the message: ");
-  bzero(buffer, 256);
-  fgets(buffer, 255, stdin);
-  n = write(sockfd, buffer, strlen(buffer));
-  if (n < 0) {
-    error("ERROR writing to socket");
+  while (1) {
+    printf("message: ");
+    bzero(buffer, 256);
+    fgets(buffer, 255, stdin);
+    n = write(sockfd, buffer, strlen(buffer));
+    if (n < 0) {
+      error("ERROR writing to socket");
+    }
   }
   bzero(buffer,256);
   n = read(sockfd, buffer, 255);
