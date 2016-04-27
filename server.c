@@ -41,11 +41,12 @@ int start_server(int portno)
       // child process
       close(server_fd);
       while (1) {
-        // handle client disconnect
+        // TODO: handle client disconnect
         bzero(buffer, 256);
         n = read(session_fd, buffer, 255);
         if (n < 0) error("ERROR reading from socket");
-        printf("%s\n", buffer);
+        if (*buffer)
+          printf("%s\n", buffer);
       }
       printf("Connection closed\n");
     } else {

@@ -1,15 +1,13 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <strings.h>
+
 #include "client.h"
 
-
-
-#include <stdio.h>
-
 int main() {
-  client_id *id;
-  //id->id = 1;
-  //id->descr = "sample device";
-  //id->connected = 0;
-  client(id);
+  int sockfd, r;
+  sockfd = client();
+  client_write(sockfd, "hello", 5);
   return 0;
 }

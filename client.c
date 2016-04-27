@@ -10,11 +10,10 @@
 #include "client.h"
 #include "error.h"
 
-int client(client_id *id) {
+int client() {
   int sockfd, portno, n;
   struct sockaddr_in serv_addr;
   struct hostent *server;
-  char buffer[256];
   portno = 5000;
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0) {
@@ -32,21 +31,13 @@ int client(client_id *id) {
   if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
     error("ERROR connecting");
   }
-  while (1) {
-    printf("message: ");
-    bzero(buffer, 256);
-    fgets(buffer, 255, stdin);
-    n = write(sockfd, buffer, strlen(buffer));
-    if (n < 0) {
-      error("ERROR writing to socket");
-    }
-  }
-  bzero(buffer,256);
-  n = read(sockfd, buffer, 255);
-  if (n < 0) {
-    error("ERROR reading from socket");
-  }
-  printf("%s\n", buffer);
-  close(sockfd);
-  return 0;
+  return sockfd;
+}
+
+int client_write(int sockfd, char *msg, int nbytes) {
+  nbytes++;
+  char buffer[nbytes];
+  bzero(buffer, nbytes);
+  strcpy(buffer, msg);
+  return write(sockfd, buffer, nbytes);
 }

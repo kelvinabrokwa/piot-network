@@ -1,12 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-typedef struct {
-  int id;
-  char *descr;
-  int connected;
-} client_id;
-
-int client(client_id *id);
+int client();
+int client_write(int sockfd, char *msg, int nbytes);
 
 #endif
