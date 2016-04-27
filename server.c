@@ -11,13 +11,13 @@
 
 int start_server(int portno)
 {
-  int sockfd, newsockfd;
+  int server_fd;
   socklen_t clilen;
   char buffer[256];
   struct sockaddr_in serv_addr, cli_addr;
   int n;
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd < 0) {
+  server_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (server_fd < 0) {
     error("ERROR opening socket");
   }
   bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -25,20 +25,33 @@ int start_server(int portno)
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = INADDR_ANY;
   serv_addr.sin_port = htons(portno);
-  if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+  if (bind(server_fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
     error("ERROR on binding");
   }
-  listen(sockfd, 5);
+  printf("Listening on port: %d\n", portno);
+  listen(server_fd, 5);
   clilen = sizeof(cli_addr);
-  newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-  if (newsockfd < 0) error("ERROR on accept");
   while (1) {
-    bzero(buffer, 256);
-    n = read(newsockfd, buffer, 255);
-    if (n < 0) error("ERROR reading from socket");
-    printf("%s\n", buffer);
+    int session_fd = accept(server_fd, (struct sockaddr *) &cli_addr, &clilen);
+    if (session_fd < 0) error("ERROR on accept");
+    pid_t pid = fork();
+    if (pid == -1) {
+      error("Could not create child process.");
+    } else if (pid == 0) {
+      // child process
+      close(server_fd);
+      while (1) {
+        // handle client disconnect
+        bzero(buffer, 256);
+        n = read(session_fd, buffer, 255);
+        if (n < 0) error("ERROR reading from socket");
+        printf("%s\n", buffer);
+      }
+      printf("Connection closed\n");
+    } else {
+      // parent process
+      close(session_fd);
+    }
   }
-  close(newsockfd);
-  close(sockfd);
   return 0;
 }
